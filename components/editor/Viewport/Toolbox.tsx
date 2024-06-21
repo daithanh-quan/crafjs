@@ -7,9 +7,9 @@ import ButtonSvg from '../../../public/icons/toolbox/button.svg';
 import SquareSvg from '../../../public/icons/toolbox/rectangle.svg';
 import TypeSvg from '../../../public/icons/toolbox/text.svg';
 import YoutubeSvg from '../../../public/icons/toolbox/video-line.svg';
+import ImageSvg from '../../../public/icons/toolbox/image.svg';
 import { Button } from '../../selectors/Button';
-import { Container } from '../../selectors/Container';
-import { Text } from '../../selectors/Text';
+import { Container, Text, ImageElement } from "../../selectors";
 import { Video } from '../../selectors/Video';
 
 const ToolboxDiv = styled.div<{ enabled: boolean }>`
@@ -63,6 +63,27 @@ export const Toolbox = () => {
           <Tooltip title="Container" placement="right">
             <Item className="m-2 pb-2 cursor-pointer block" move>
               <SquareSvg />
+            </Item>
+          </Tooltip>
+        </div>
+        <div
+          ref={(ref) =>
+            create(
+              ref,
+              <Element
+                canvas
+                is={ImageElement}
+                background={{ r: 78, g: 78, b: 78, a: 1 }}
+                color={{ r: 0, g: 0, b: 0, a: 1 }}
+                height="300px"
+                width="300px"
+              ></Element>
+            )
+          }
+        >
+          <Tooltip title="Image" placement="right">
+            <Item className="m-2 pb-2 px-2 cursor-pointer block" move>
+              <ImageSvg />
             </Item>
           </Tooltip>
         </div>

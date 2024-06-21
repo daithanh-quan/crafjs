@@ -1,4 +1,4 @@
-import { UserComponent, useNode } from '@craftjs/core';
+import { useNode } from '@craftjs/core';
 import cx from 'classnames';
 import React from 'react';
 import styled from 'styled-components';
@@ -30,7 +30,7 @@ const StyledButton = styled.button<ButtonProps>`
     `${margin[0]}px ${margin[1]}px ${margin[2]}px ${margin[3]}px`};
 `;
 
-export const Button: UserComponent<ButtonProps> = (props: any) => {
+export const Button = (props: ButtonProps) => {
   const {
     connectors: { connect },
   } = useNode((node) => ({
@@ -68,6 +68,6 @@ Button.craft = {
     },
   },
   related: {
-    toolbar: ButtonSettings,
+    toolbar: ButtonSettings as any,
   },
 };
