@@ -1,7 +1,8 @@
 import { TextField, makeStyles, InputAdornment } from '@material-ui/core';
-import React, { useEffect } from 'react';
+import React, { useCallback, useEffect } from "react";
 import { useState } from 'react';
 import { ChromePicker } from 'react-color';
+import { debounce } from "debounce";
 
 const useStyles = makeStyles({
   root: {
@@ -70,6 +71,8 @@ export const ToolbarTextInput = ({
     setInternalValue(val);
   }, [value, type]);
 
+  const delayChange = useCallback(debounce(onChange, 600), []);
+
   return (
     <div
       style={{ width: '100%', position: 'relative' }}
@@ -113,6 +116,7 @@ export const ToolbarTextInput = ({
         }}
         onChange={(e) => {
           setInternalValue(e.target.value);
+          delayChange((e.target as any).value);
         }}
         margin="dense"
         variant="filled"
