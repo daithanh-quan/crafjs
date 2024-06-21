@@ -1,5 +1,5 @@
 import { useNode, useEditor } from '@craftjs/core';
-import { ROOT_NODE } from '@craftjs/utils';
+import { getRandomId, ROOT_NODE } from "@craftjs/utils";
 import React, { useEffect, useRef, useCallback } from 'react';
 import ReactDOM from 'react-dom';
 import styled from 'styled-components';
@@ -7,6 +7,7 @@ import styled from 'styled-components';
 import ArrowUp from '../../public/icons/arrow-up.svg';
 import Delete from '../../public/icons/delete.svg';
 import Move from '../../public/icons/move.svg';
+import CloneIcon from '../../public/icons/clone.svg';
 
 const IndicatorDiv = styled.div`
   height: 30px;
@@ -97,6 +98,51 @@ export const RenderNode = ({ render }) => {
     };
   }, [scroll]);
 
+  const getCloneTree = useCallback((idToClone: any) => {
+    const tree = query.node(idToClone).toNodeTree();
+    const newNodes = {};
+
+    const changeNodeId = (node: any, newParentId?: any) => {
+      let newNodeId = getRandomId()
+
+      const childNodes = node.data.nodes.map((childId) =>
+        changeNodeId(tree.nodes[childId], newNodeId)
+      );
+      const linkedNodes = Object.keys(node.data.linkedNodes).reduce(
+        (accum, id) => {
+          const _newNodeId = changeNodeId(
+            tree.nodes[node.data.linkedNodes[id]],
+            newNodeId
+          );
+          return {
+            ...accum,
+            [id]: _newNodeId
+          };
+        },
+        {}
+      );
+
+      newNodes[newNodeId] = {
+        ...node,
+        id: newNodeId,
+        data: {
+          ...node.data,
+          parent: newParentId || node.data.parent,
+          nodes: childNodes,
+          linkedNodes
+        }
+      };
+
+      return newNodeId;
+    };
+
+    const rootNodeId = changeNodeId(tree.nodes[tree.rootNodeId]);
+    return {
+      rootNodeId,
+      nodes: newNodes
+    };
+  }, []);
+
   return (
     <>
       {isHover || isActive
@@ -116,6 +162,24 @@ export const RenderNode = ({ render }) => {
                   <Move />
                 </Btn>
               ) : null}
+              <Btn className="mr-2 cursor-move"
+                   onClick={(e: React.MouseEvent) => {
+                     e.stopPropagation();
+                     const parentNode = query.node(parent).get();
+                     const indexToAdd = parentNode.data.nodes.indexOf(id)
+                     const tree = getCloneTree(id); // id is the node id
+                     actions.addNodeTree(tree, parentNode.id, indexToAdd + 1);
+                     // uncomment this code block to have the clone function to work properly
+                     //  see https://github.com/prevwong/craft.js/issues/209
+                     setTimeout(function () {
+                       actions.deserialize(query.serialize());
+                       actions.selectNode(tree.rootNodeId);
+                     }, 100);
+
+                   }}
+              >
+                <CloneIcon/>
+              </Btn>
               {id !== ROOT_NODE && (
                 <Btn
                   className="mr-2 cursor-pointer"
