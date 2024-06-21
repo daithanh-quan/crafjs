@@ -2,7 +2,7 @@ import { useNode, useEditor } from '@craftjs/core';
 import React from 'react';
 import ContentEditable from 'react-contenteditable';
 
-import { TextSettings } from './TextSettings';
+import { TextSettings, TextWidthType } from "./TextSettings";
 
 export type TextProps = {
   fontSize: string;
@@ -12,6 +12,8 @@ export type TextProps = {
   shadow: number;
   text: string;
   margin: [string, string, string, string];
+  width: string;
+  widthType?: string;
 };
 
 export const Text = ({
@@ -21,7 +23,7 @@ export const Text = ({
   color,
   shadow,
   text,
-  margin,
+  margin, width, widthType
 }: Partial<TextProps>) => {
   const {
     connectors: { connect },
@@ -40,13 +42,12 @@ export const Text = ({
       }} // use true to disable editing
       tagName="h2" // Use a custom HTML tag (uses a div by default)
       style={{
-        width: '100%',
         margin: `${margin[0]}px ${margin[1]}px ${margin[2]}px ${margin[3]}px`,
         color: `rgba(${Object.values(color)})`,
         fontSize: `${fontSize}px`,
         textShadow: `0px 0px 2px rgba(0,0,0,${(shadow || 0) / 100})`,
         fontWeight,
-        textAlign,
+        textAlign, width: widthType === TextWidthType.auto.key ? TextWidthType.auto.value : width
       }}
     />
   );
@@ -62,6 +63,8 @@ Text.craft = {
     margin: [0, 0, 0, 0],
     shadow: 0,
     text: 'Text',
+    width: "100%",
+    widthType: TextWidthType.custom.key,
   },
   related: {
     toolbar: TextSettings,

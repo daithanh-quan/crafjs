@@ -3,6 +3,12 @@ import React from 'react';
 import { capitalize, weightDescription } from '../../../utils/text';
 import { ToolbarSection, ToolbarItem } from '../../editor';
 import { ToolbarRadio } from '../../editor/Toolbar/ToolbarRadio';
+import { ToolbarItemPreCheck } from "../../editor/Toolbar/ToolbarItemPreCheck";
+
+export const TextWidthType = {
+  auto: {key: "auto", value: "auto"},
+  custom: {key: "custom", value: "custom"},
+}
 
 export const TextSettings = () => {
   return (
@@ -73,6 +79,23 @@ export const TextSettings = () => {
           type="slider"
           label="Shadow"
         />
+      </ToolbarSection>
+      <ToolbarSection
+        title="Width"
+        props={['width', 'widthType']}
+        summary={({ width, widthType }: any) => {
+          return widthType === TextWidthType.auto.key ? TextWidthType.auto.value : `${width || ""}`;
+        }}
+      >
+        <ToolbarItem propKey="widthType" type="radio" label="Type" full={true}>
+          {Object.values(TextWidthType).map(val => (
+            <ToolbarRadio value={val?.key} label={val?.value}/>
+          ))}
+        </ToolbarItem>
+        <ToolbarItemPreCheck
+          preCheckKey="widthType"
+          checkShow={value => value !== TextWidthType.auto.key}
+          full={true} propKey="width" type="text" label="Width" />
       </ToolbarSection>
     </React.Fragment>
   );
